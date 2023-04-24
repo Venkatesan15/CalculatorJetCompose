@@ -26,14 +26,12 @@ import androidx.compose.ui.unit.dp
 import java.text.DecimalFormat
 
 
-
 class FragmentTwo : Fragment() {
 
 
     companion object {
         var btnText by mutableStateOf("")
         var inputOne by mutableStateOf("")
-
         var inputTwo by mutableStateOf("")
 
     }
@@ -43,7 +41,7 @@ class FragmentTwo : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val view =  ComposeView(requireContext())
+        val view = ComposeView(requireContext())
 
         view.apply {
 
@@ -63,19 +61,18 @@ class FragmentTwo : Fragment() {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Gray),
-            verticalArrangement  = Arrangement.Center,
-
-
-            ) {
+            verticalArrangement = Arrangement.Center,
+        ) {
 
             TextField(
                 value = inputOne, onValueChange = {
-                    if(!it.contains(',')) {
+                    if (!it.contains(',')) {
                         inputOne = it
                     }
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,  imeAction = ImeAction.Next
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
                 ),
                 singleLine = true,
                 label = { Text("Number One") }
@@ -83,20 +80,20 @@ class FragmentTwo : Fragment() {
 
             Spacer(modifier = Modifier.size(30.dp))
 
-
-
             TextField(
-                value = inputTwo, onValueChange = {
-
-
-                    if(!it.contains(',')) {
+                value = inputTwo,
+                onValueChange = {
+                    if (!it.contains(',')) {
                         inputTwo = it
                     }
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
                 keyboardActions = KeyboardActions(
-                    onDone = { focusManager.clearFocus()}),
+                    onDone = { focusManager.clearFocus() }),
                 singleLine = true,
                 label = { Text("Number Two") },
 
@@ -108,34 +105,31 @@ class FragmentTwo : Fragment() {
             Button(onClick = {
                 onClick()
             }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-               if (btnText.isEmpty()) {
-                   Text(text = arguments?.getString(FragmentOne.action).toString())
-               }
-                else {
-                   Text(text = btnText)
-               }
+                if (btnText.isEmpty()) {
+                    Text(text = arguments?.getString(FragmentOne.action).toString())
+                } else {
+                    Text(text = btnText)
+                }
             }
-
-
         }
     }
+
     private fun onClick() {
 
-        if(inputOne.trim().isNotEmpty() && inputTwo.trim().isNotEmpty()) {
+        if (inputOne.trim().isNotEmpty() && inputTwo.trim().isNotEmpty()) {
 
             val fragmentOne = parentFragmentManager.findFragmentByTag(MainActivity.fragmentOneTag)
             if (fragmentOne != null) {
                 fragmentOne.arguments = getResultBundle(
                     inputOne,
                     inputTwo,
-                    arguments?.getString(FragmentOne.action).toString()
+                    btnText
                 )
             }
 
-            if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                 parentFragmentManager.popBackStack()
-            }
-            else {
+            } else {
                 parentFragmentManager.beginTransaction().remove(this@FragmentTwo).commit()
             }
 
@@ -144,16 +138,16 @@ class FragmentTwo : Fragment() {
             inputTwo = ""
             arguments = null
 
-            val fragBBB = parentFragmentManager.findFragmentByTag(FragmentOne.frgBTag)
-            if(fragBBB !=  null) parentFragmentManager.beginTransaction().remove(this@FragmentTwo).commit()
+//            val fragBBB = parentFragmentManager.findFragmentByTag(FragmentOne.frgBTag)
+//            if (fragBBB != null) parentFragmentManager.beginTransaction().remove(this@FragmentTwo).commit()
 
-        }
-        else {
+        } else {
             Toast.makeText(context, "Please Enter Input", Toast.LENGTH_SHORT).show()
         }
         FragmentOne.actionPage = false
     }
-    private fun getResultBundle(input1: String, input2: String, action: String): Bundle{
+
+    private fun getResultBundle(input1: String, input2: String, action: String): Bundle {
 
         val num1 = input1.toFloat()
         val num2 = input2.toFloat()
@@ -162,16 +156,16 @@ class FragmentTwo : Fragment() {
             "Add" -> (num1 + num2)
             "Subtract" -> (num1 - num2)
             "Multiply" -> (num1 * num2)
-            "Division" -> (num1/num2)
+            "Division" -> (num1 / num2)
             else -> null!!
         }
 
         val format = DecimalFormat("0.#")
 
-
         val bundle = Bundle()
 
-        val resultText = "Your Result is ${format.format(ans)} for inputs $input1 and $input2 with action $action"
+        val resultText =
+            "Your Result is ${format.format(ans)} for inputs $input1 and $input2 with action $action"
         FragmentOne.result = resultText
         bundle.putString(FragmentOne.resultText, resultText)
         return bundle

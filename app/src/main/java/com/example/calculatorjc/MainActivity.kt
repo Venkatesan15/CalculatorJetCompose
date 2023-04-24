@@ -20,7 +20,7 @@ import kotlin.math.absoluteValue
 class MainActivity : AppCompatActivity() {
 
 
-//    private val fragmentTwo = FragmentTwo()
+    private val fragmentTwo = FragmentTwo()
     private val fragmentOne = FragmentOne()
     companion object {
 
@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity() {
                             update = {
                                 if(savedInstanceState?.getBundle(fragTwoArg) != null) {
 
-                                    val fragmentTwo = FragmentTwo()
                                     fragmentTwo.arguments = savedInstanceState.getBundle(fragTwoArg)
                                     supportFragmentManager.beginTransaction().replace(it.id, fragmentTwo, FragmentOne.frgBTag).commit()
                                 }
@@ -96,14 +95,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 else -> {
-
                     val currentConfiguration = LocalConfiguration.current
                     configuration = if (currentConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE) landscape else portrait
                 }
             }
-
     }
-
 
     @Composable
     fun SetFragmentOne(modifier: Modifier, savedInstanceState: Bundle?) {
@@ -123,60 +119,49 @@ class MainActivity : AppCompatActivity() {
                 }
             },
                 update = {
-                    if(savedInstanceState?.getBundle(fragTwoArg) != null) {
+                    if (savedInstanceState?.getBundle(fragTwoArg) != null) {
 
-                        val fragmentTwo = FragmentTwo()
+                        setFragmentTwo(savedInstanceState, it)
 
-                        fragmentTwo.arguments = savedInstanceState.getBundle(fragTwoArg)
+                    } else if (savedInstanceState?.getBundle(resultAvailable) != null) {
 
-                        if(configuration == portrait) {
-
-                            val landContainerTwoFrg = supportFragmentManager.findFragmentById(containerTwoR)
-
-                            val containerOneFrg = supportFragmentManager.findFragmentById(containerOneR)
-
-                            if(containerOneFrg != null) {
-                                supportFragmentManager.beginTransaction().remove(containerOneFrg).commit()
-                            }
-                            if(landContainerTwoFrg != null) {
-                                supportFragmentManager.beginTransaction().remove(landContainerTwoFrg).commit()
-                            }
-
-                            val frgBForRemove = supportFragmentManager.findFragmentByTag(FragmentOne.frgBTag)
-                            if(frgBForRemove != null) supportFragmentManager.beginTransaction().remove(frgBForRemove).commit()
-
-                            supportFragmentManager.beginTransaction().apply {
-                                replace(it.id, FragmentOne(), fragmentOneTag).commit()
-                            }
-
-                            supportFragmentManager.beginTransaction().apply {
-                                addToBackStack(fragmentOneTag)
-                                replace(it.id, fragmentTwo, FragmentOne.frgBTag).commit()
-                            }
-                        } else {
-                            supportFragmentManager.popBackStack()
-                            supportFragmentManager.beginTransaction().replace( it.id, fragmentOne, fragmentOneTag ).commit()
-                        }
-
-                    } else if(savedInstanceState?.getBundle(resultAvailable) != null) {
                         FragmentOne.actionPage = false
-                        val bun = savedInstanceState.getBundle(resultAvailable)
 
+                        val bun = savedInstanceState.getBundle(resultAvailable)
                         FragmentOne.result  = bun?.getString(FragmentOne.resultText).toString()
                     }
                     else {
-                        val fragmentA = supportFragmentManager.findFragmentByTag(fragmentOneTag)
-
-                        if (fragmentA != null) {
-                            supportFragmentManager.beginTransaction().remove(fragmentOne).commit()
-                        }
-
                         supportFragmentManager.beginTransaction()
                             .replace(it.id, FragmentOne(), fragmentOneTag).commit()
                     }
 
                 })
 
+        }
+    }
+    private fun setFragmentTwo(savedInstanceState: Bundle, frameLayout: FrameLayout) {
+
+        fragmentTwo.arguments = savedInstanceState.getBundle(fragTwoArg)
+
+        if (configuration == portrait) {
+
+            val frgBForRemove = supportFragmentManager.findFragmentByTag(FragmentOne.frgBTag)
+            if (frgBForRemove != null) supportFragmentManager.beginTransaction().remove(frgBForRemove).commit()
+
+            //When we start from landscape
+            val frgA = supportFragmentManager.findFragmentById(frameLayout.id)
+            if(frgA == null) {
+                supportFragmentManager.beginTransaction().replace(frameLayout.id, fragmentOne, fragmentOneTag).commit()
+            }
+
+            supportFragmentManager.beginTransaction().apply {
+                addToBackStack(fragmentOneTag)
+                replace(frameLayout.id, fragmentTwo, FragmentOne.frgBTag).commit()
+            }
+
+        } else {
+            supportFragmentManager.popBackStack()
+            supportFragmentManager.beginTransaction().replace( frameLayout.id, fragmentOne, fragmentOneTag ).commit()
         }
     }
 
