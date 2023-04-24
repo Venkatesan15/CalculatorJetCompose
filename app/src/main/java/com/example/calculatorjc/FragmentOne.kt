@@ -80,7 +80,6 @@ class FragmentOne : Fragment() {
     @Composable
     fun SetActions() {
 
-
         var onClick by remember {
             mutableStateOf(false)
         }
@@ -154,17 +153,17 @@ class FragmentOne : Fragment() {
 
         FragmentTwo.btnText = bundle.getString(action).toString()
 
-        var configuration by remember {
-            mutableStateOf("")
-        }
+//        var configuration by remember {
+//            mutableStateOf("")
+//        }
 
-        val currentConfiguration = LocalConfiguration.current
+        //val currentConfiguration = LocalConfiguration.current
 
-        configuration = if (currentConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE) MainActivity.landscape else MainActivity.portrait
+        //configuration = if (currentConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE) MainActivity.landscape else MainActivity.portrait
 
         fragmentTwo.arguments = bundle
 
-        if (configuration == MainActivity.portrait) {
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
 
             parentFragmentManager.beginTransaction().apply {
                 addToBackStack(MainActivity.fragmentOneTag)
@@ -172,8 +171,9 @@ class FragmentOne : Fragment() {
                 replace(MainActivity.containerOne, fragmentTwo, frgBTag).commit()
             }
         }
-        else if (configuration == MainActivity.landscape) {
+        else {
 
+            println("Landscape")
             val frgB = parentFragmentManager.findFragmentByTag(frgBTag)
             if(frgB != null) {
                 FragmentTwo.btnText = bundle.getString(action).toString()

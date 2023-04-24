@@ -11,11 +11,11 @@
         android:supportsRtl="true"
         tools:targetApi="31"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity
-            android:name=".MainActivity2"
-            android:exported="false"
-            android:label="@string/title_activity_main2"
-            android:theme="@style/Theme.CalculatorJC" />
+<!--        <activity-->
+<!--            android:name=".MainActivity2"-->
+<!--            android:exported="false"-->
+<!--            android:label="@string/title_activity_main2"-->
+<!--            android:theme="@style/Theme.CalculatorJC" />-->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"

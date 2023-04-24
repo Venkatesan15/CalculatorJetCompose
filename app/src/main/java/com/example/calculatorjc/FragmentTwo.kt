@@ -138,9 +138,6 @@ class FragmentTwo : Fragment() {
             inputTwo = ""
             arguments = null
 
-//            val fragBBB = parentFragmentManager.findFragmentByTag(FragmentOne.frgBTag)
-//            if (fragBBB != null) parentFragmentManager.beginTransaction().remove(this@FragmentTwo).commit()
-
         } else {
             Toast.makeText(context, "Please Enter Input", Toast.LENGTH_SHORT).show()
         }

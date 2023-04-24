@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.ViewCompat
 import kotlin.math.absoluteValue
@@ -27,14 +28,14 @@ class MainActivity : AppCompatActivity() {
         var containerOne by mutableStateOf(ViewCompat.generateViewId())
         var containerTwo by mutableStateOf(ViewCompat.generateViewId())
 
-        const val portrait = "Portrait"
-        const val landscape = "Landscape"
+        //const val portrait = "Portrait"
+        //const val landscape = "Landscape"
         const val fragmentOneTag = "FragmentOne"
         const val fragTwoArg = "fragTwoArg"
         const val resultAvailable = "resultAvail"
     }
 
-    private var configuration by mutableStateOf("")
+    //private var configuration by mutableStateOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,23 +46,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-
-        configuration = if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            landscape
-        } else portrait
-    }
 
     @Composable
     fun Container(savedInstanceState: Bundle?) {
 
-            when (configuration) {
 
-                portrait -> {
+                if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                     SetFragmentOne(Modifier.fillMaxSize(), savedInstanceState)
                 }
-                landscape -> {
+                else if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)  {
 
                     Row {
 
@@ -94,11 +87,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                else -> {
-                    val currentConfiguration = LocalConfiguration.current
-                    configuration = if (currentConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE) landscape else portrait
-                }
-            }
     }
 
     @Composable
@@ -107,8 +95,8 @@ class MainActivity : AppCompatActivity() {
         val containerOneR by rememberSaveable { mutableStateOf(View.generateViewId()) }
         val containerTwoR by rememberSaveable { mutableStateOf(View.generateViewId()) }
 
-        containerOne = containerOneR.absoluteValue
-        containerTwo = containerTwoR.absoluteValue
+        containerOne = containerOneR
+        containerTwo = containerTwoR
 
         Box(modifier = modifier) {
 
@@ -138,13 +126,15 @@ class MainActivity : AppCompatActivity() {
                 })
 
         }
+
     }
     private fun setFragmentTwo(savedInstanceState: Bundle, frameLayout: FrameLayout) {
 
         fragmentTwo.arguments = savedInstanceState.getBundle(fragTwoArg)
 
-        if (configuration == portrait) {
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
 
+            println("$$$$$$$$$$$$")
             val frgBForRemove = supportFragmentManager.findFragmentByTag(FragmentOne.frgBTag)
             if (frgBForRemove != null) supportFragmentManager.beginTransaction().remove(frgBForRemove).commit()
 
@@ -168,11 +158,15 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
 
         val currentFragment = supportFragmentManager.findFragmentById(containerOne)
-        if(configuration == portrait && currentFragment is FragmentTwo) {
 
+        if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && currentFragment is FragmentTwo) {
+
+            println("Landscape, Main")
             outState.putBundle( fragTwoArg, currentFragment.arguments)
 
-        } else if (configuration == landscape){
+        } else if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT){
+            println("portrait Main")
+
 
             val landContainerTwo = supportFragmentManager.findFragmentById(containerTwo)
 
@@ -194,7 +188,7 @@ class MainActivity : AppCompatActivity() {
 
         FragmentTwo.inputOne = ""
         FragmentTwo.inputTwo = ""
-        if(configuration == landscape && frgB != null) {
+        if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && frgB != null) {
             supportFragmentManager.beginTransaction().remove(frgB).commit()
         }
         else super.onBackPressed()
